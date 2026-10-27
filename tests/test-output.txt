@@ -38,8 +38,6 @@
 
 5. Excel files
   PASS an .xlsx written here reads back the same
-/Users/apple/Library/Python/3.9/lib/python/site-packages/openpyxl/styles/stylesheet.py:237: UserWarning: Workbook contains no default style, apply openpyxl's default
-  warn("Workbook contains no default style, apply openpyxl's default")
   PASS Excel (openpyxl) opens it
   PASS real .xlsx: title row skipped, 15 bookings
   PASS real .xlsx: date cell becomes a date and time

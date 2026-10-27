@@ -40,6 +40,7 @@
 9. Wrong files are refused with a reason
   PASS a PDF is refused and says what to do
   PASS payments dropped in the bookings box: explained, results hidden
+  PASS a Xero export in the bookings box: "looks like a Xero invoices export"
 
 10. Downloads
   PASS fix list opens in Excel: header plus one row per problem
@@ -49,4 +50,4 @@
   PASS no sideways scrolling on a phone
   PASS no console or page errors
 
-28 passed, 0 failed
+29 passed, 0 failed

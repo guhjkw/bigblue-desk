@@ -171,7 +171,8 @@
     let mapping = '';
     if (cols) {
       const spec = Desk.SPECS[s.kind], fields = Object.keys(spec), found = fields.filter((k) => cols.map[k]).length;
-      const miss = cols.missing.length ? '<p class="err">This does not look like ' + esc(s.what) + ': no ' + esc(cols.missing.map((k) => spec[k].label.toLowerCase()).join(' or ')) + ' column found. Pick it below, or drop the file in the right box.</p>' : '';
+      const wrong = !cols.missing.length && wrongBox(s.kind, t);
+      const miss = wrong ? '<p class="err">This looks like ' + esc(wrong.what) + ', not ' + esc(s.what) + '. Drop it in the ' + esc(wrong.title) + ' box.</p>' : cols.missing.length ? '<p class="err">This does not look like ' + esc(s.what) + ': no ' + esc(cols.missing.map((k) => spec[k].label.toLowerCase()).join(' or ')) + ' column found. Pick it below, or drop the file in the right box.</p>' : '';
       mapping = miss + '<details' + (cols.missing.length ? ' open' : '') + '><summary>Columns: ' + found + ' of ' + fields.length + ' found. Check or change</summary><div class="maps">' +
         fields.map((k) => '<label class="map"><span>' + esc(spec[k].label) + (spec[k].required ? ' *' : '') + '</span><select data-kind="' + s.kind + '" data-field="' + k + '"><option value="">(not in this file)</option>' +
           t.headers.map((h) => '<option' + (cols.map[k] === h ? ' selected' : '') + '>' + esc(h) + '</option>').join('') + '</select></label>').join('') + '</div></details>';
@@ -203,15 +204,30 @@
     state.sample = true; state.asOf = '2026-10-27'; state.day = null; state.filter = 'problems'; refresh();
   }
 
+
+  // A file that plainly belongs in another box: another export type finds all its required columns in it and
+  // clearly more of its columns than this box does (an orders export has a code and a product name too).
+  function wrongBox(kind, t) {
+    const share = (k, fixed) => { const c = Desk.columns(k, t, fixed); return { c, sc: Object.values(c.map).filter(Boolean).length / Object.keys(Desk.SPECS[k]).length }; };
+    const own = share(kind, state.maps[kind]).sc;
+    let best = null;
+    SLOTS.forEach((s) => {
+      if (s.kind === kind || !Desk.SPECS[s.kind]) return;
+      const o = share(s.kind, {});
+      if (!o.c.missing.length && o.sc >= own + 0.3 && (!best || o.sc > best.sc)) best = { slot: s, sc: o.sc };
+    });
+    return best ? best.slot : null;
+  }
+  const usable = (kind) => state.tables[kind] && !Desk.columns(kind, state.tables[kind], state.maps[kind]).missing.length && !wrongBox(kind, state.tables[kind]);
   // ---------- results ----------
   function refresh() {
     renderSlots();
     $('#asof').value = state.asOf;
     $('#samplebanner').classList.toggle('hidden', !state.sample);
     state.data = null; state.result = null;
-    if (!state.tables.bookings) { $('#results').classList.add('hidden'); return; }
-    const data = Desk.prepare(state.tables, state.maps);
-    if (data.columns.bookings.missing.length) { $('#results').classList.add('hidden'); return; }
+    if (!usable('bookings')) { $('#results').classList.add('hidden'); return; }
+    const tables = {}; Object.keys(state.tables).forEach((k) => { if (usable(k)) tables[k] = state.tables[k]; });
+    const data = Desk.prepare(tables, state.maps);
     state.data = data; state.result = Desk.check(data, state.asOf);
     if (!state.day || !/^\d{4}-\d{2}-\d{2}$/.test(state.day)) state.day = Desk.nextDiveDate(data, state.asOf);
     $('#results').classList.remove('hidden');

@@ -106,7 +106,11 @@ with sync_playwright() as p:
     page.click('[data-remove=orders]')
     page.set_input_files('input[data-kind=bookings]', os.path.join(SAMPLES, 'payzen-payments-SAMPLE.csv'))
     check('payments dropped in the bookings box: explained, results hidden', 'does not look like a Bookeo bookings export' in text('#slots') and page.locator('#results').is_hidden(), text('#slots')[:300])
+    page.set_input_files('input[data-kind=bookings]', os.path.join(SAMPLES, 'xero-invoices-SAMPLE.csv'))
+    page.wait_for_function('n => document.querySelector("#slots").innerText.includes(n)', arg='xero-invoices-SAMPLE.csv: 16 rows')
+    check('a Xero export in the bookings box: "looks like a Xero invoices export"', 'This looks like a Xero invoices export' in text('#slots') and page.locator('#results').is_hidden(), text('#slots')[:300])
     page.set_input_files('input[data-kind=bookings]', os.path.join(ROOT, 'tests', 'fixtures', 'bookeo-SAMPLE.xlsx'))
+    page.wait_for_selector('#results:not(.hidden)')
     page.fill('#asof', '2026-10-27'); page.dispatch_event('#asof', 'change')
 
     print('\n10. Downloads')
