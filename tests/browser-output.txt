@@ -1,0 +1,52 @@
+
+1. First visit
+  PASS four export boxes, results hidden
+
+2. Sample files
+  PASS results appear with the sample banner
+  PASS VT 159,000 to chase, VT 12,000 paid but open, VT 13,500 never invoiced, VT 13,500 to refund
+  PASS 12 rows need doing
+  PASS filter to "Paid twice" shows James
+
+3. Dive day
+  PASS 28 Oct: 2 trips, 7 people
+  PASS crew message ready, forms that are in left out
+  PASS missing medical form shown for Lucas
+  PASS "Next dive day" moves to 29 Oct
+
+4. The check date changes the answer
+  PASS checking as of 15 Nov re-sorts the unpaid bookings
+  PASS ...and Hannah is no longer only "overdue" but diving this week
+
+5. Reminders
+  PASS six unpaid bookings listed
+  PASS French chosen for a .fr email
+  PASS switching to English rewrites it
+
+6. Revenue
+  PASS courses VT 184,500 under 4-1020 Dive Courses
+
+7. Real files dropped in (Excel bookings, CSV invoices and payments)
+  PASS clear hides the results
+  PASS Excel bookings read: 15 rows
+  PASS same answer from the Excel file: VT 159,000 to chase
+  PASS no sample banner for real files
+
+8. Changing a column changes the result
+  PASS the column section stays open after a change
+  PASS reading "Amount paid" as the price changes the totals
+  PASS putting it back restores them
+
+9. Wrong files are refused with a reason
+  PASS a PDF is refused and says what to do
+  PASS payments dropped in the bookings box: explained, results hidden
+
+10. Downloads
+  PASS fix list opens in Excel: header plus one row per problem
+  PASS reminders CSV has six messages
+
+11. Phone width
+  PASS no sideways scrolling on a phone
+  PASS no console or page errors
+
+28 passed, 0 failed

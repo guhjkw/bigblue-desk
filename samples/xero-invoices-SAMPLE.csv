@@ -1,0 +1,17 @@
+ContactName,EmailAddress,InvoiceNumber,Reference,InvoiceDate,DueDate,Total,TaxTotal,InvoiceAmountPaid,InvoiceAmountDue,Description,Quantity,UnitAmount,LineAmount,AccountCode,TaxType,Currency,Status
+Sarah Mitchell,sarah.m@example.com,INV-2101,Bookeo 1043201,20/10/2026,28/10/2026,24000,0,24000,0,Two-tank reef dive x2,2,12000,24000,4-1010,Tax Exempt,VUV,Paid
+Tom Reilly,tom.reilly@example.com,INV-2102,Bookeo 1043202,21/10/2026,28/10/2026,12000,0,0,12000,Two-tank reef dive,1,12000,12000,4-1010,Tax Exempt,VUV,Awaiting Payment
+Mei Lin Chen,meilin.c@example.com,INV-2103,Bookeo 1043203,22/10/2026,28/10/2026,12000,0,0,12000,Two-tank reef dive,1,12000,12000,4-1010,Tax Exempt,VUV,Awaiting Payment
+Lucas Martin,lucas.martin@example.fr,INV-2104,Bookeo 1043204,23/10/2026,28/10/2026,27000,0,0,27000,Discover Scuba Diving x2,2,13500,27000,4-1020,Tax Exempt,VUV,Awaiting Payment
+Sophie Garnier,sophie.g@example.fr,INV-2114,Bookeo 1043214,23/10/2026,28/10/2026,13500,0,13500,0,Discover Scuba Diving,1,13500,13500,4-1020,Tax Exempt,VUV,Paid
+James Okoro,james.okoro@example.com,INV-2106,Bookeo 1043206,19/10/2026,29/10/2026,13500,0,13500,0,Wreck dive: Star of Russia,1,13500,13500,4-1010,Tax Exempt,VUV,Paid
+Grace Thompson,grace.t@example.com.au,INV-2115,,18/10/2026,29/10/2026,12000,0,12000,0,Cruise ship two-tank dive,1,12000,12000,4-1010,Tax Exempt,VUV,Paid
+Emma Taylor,emma.taylor@example.com,INV-2107,Bookeo 1043207,15/10/2026,30/10/2026,96000,0,48000,48000,PADI Open Water course x2,2,48000,96000,4-1020,Tax Exempt,VUV,Awaiting Payment
+Olivia Brown,olivia.b@example.com,INV-2110,Bookeo 1043210,16/10/2026,31/10/2026,12000,0,0,12000,Two-tank reef dive,1,12000,12000,4-1010,Tax Exempt,VUV,Awaiting Payment
+Noah Wilson,noah.w@example.com,INV-2111,Bookeo 1043211,24/10/2026,24/10/2026,9500,0,9500,0,Night dive,1,9500,9500,4-1010,Tax Exempt,VUV,Paid
+Ben Harris,ben.harris@example.com,INV-2109,Bookeo 1043209,01/10/2026,05/11/2026,158000,0,158000,0,Stay & Dive 5 nights: accommodation,1,98000,98000,4-1050,Tax Exempt,VUV,Paid
+Ben Harris,ben.harris@example.com,INV-2109,Bookeo 1043209,01/10/2026,05/11/2026,158000,0,158000,0,Stay & Dive 5 nights: 10 dives,1,60000,60000,4-1010,Tax Exempt,VUV,Paid
+Chloe Dubois,chloe.d@example.fr,INV-2108,Bookeo 1043208,20/10/2026,12/11/2026,12000,0,0,12000,Two-tank reef dive,1,12000,12000,4-1010,Tax Exempt,VUV,Awaiting Payment
+Hannah Lee,hannah.lee@example.com,INV-2112,Bookeo 1043212,06/10/2026,20/10/2026,48000,0,0,48000,PADI Advanced course,1,48000,48000,4-1020,Tax Exempt,VUV,Awaiting Payment
+Daniel Kim,daniel.kim@example.com,INV-2113,Bookeo 1043213,25/10/2026,18/11/2026,12000,0,0,12000,Two-tank reef dive,1,12000,12000,4-1010,Tax Exempt,VUV,Awaiting Payment
+Rachel Green,rachel.g@example.com,INV-2120,WC Order #5521,26/10/2026,02/11/2026,6500,0,0,6500,Mask and snorkel set,1,6500,6500,4-1040,Tax Exempt,VUV,Awaiting Payment

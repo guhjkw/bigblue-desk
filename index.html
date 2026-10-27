@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Big Blue Desk</title>
+<style>
+  :root { --ink:#0d1b2a; --muted:#566778; --line:#d8e2ea; --bg:#f3f7fa; --card:#ffffff; --accent:#0a5c9e; --accent-soft:#e3f0fa; --urgent:#b42318; --urgent-soft:#fdecea; --act:#9a5b00; --act-soft:#fff4e0; --ok:#137a3a; --ok-soft:#e5f5ea; --info:#475569; --info-soft:#eef2f6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+  header.top { background: linear-gradient(135deg, #073b66, #0a5c9e 60%, #0f7fb8); color: #fff; padding: 28px 0 24px; }
+  .brand { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+  .brand span { font-size: 15px; font-weight: 500; opacity: .8; margin-left: 8px; }
+  .lead { max-width: 760px; margin: 8px 0 6px; font-size: 16px; opacity: .95; }
+  .privacy { margin: 0; font-size: 13px; opacity: .85; }
+  h2 { font-size: 19px; margin: 28px 0 12px; }
+  .slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+  .slot { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .slot.loaded { border-color: #9cc4e4; }
+  .slot-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .tag { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
+  .drop { display: block; border: 2px dashed #b9cfe0; border-radius: 10px; padding: 14px 12px; text-align: center; cursor: pointer; background: #fafcfe; }
+  .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+  .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .drop span { display: block; font-weight: 600; word-break: break-word; }
+  .drop small { display: block; color: var(--muted); margin-top: 4px; }
+  .slot.loaded .drop { border-style: solid; border-color: #cfe0ee; }
+  details { margin-top: 8px; font-size: 13px; }
+  summary { cursor: pointer; color: var(--accent); }
+  .maps { display: grid; gap: 6px; margin-top: 8px; }
+  .map { display: grid; grid-template-columns: 1fr 1.3fr; gap: 6px; align-items: center; }
+  .map span { color: var(--muted); }
+  select, input[type=date] { font: inherit; padding: 5px 8px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); max-width: 100%; }
+  .err { color: var(--urgent); font-size: 13px; margin: 8px 0 0; }
+  .bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+  button { font: inherit; cursor: pointer; border-radius: 9px; border: 1px solid var(--accent); background: var(--accent); color: #fff; padding: 8px 14px; font-weight: 600; }
+  button.ghost { background: #fff; color: var(--accent); }
+  button.link { background: none; border: 0; color: var(--muted); padding: 4px 0 0; font-weight: 500; text-decoration: underline; }
+  .banner { background: var(--act-soft); border: 1px solid #f1d29a; border-radius: 10px; padding: 8px 12px; font-size: 14px; }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .tabs button { background: none; border: 0; border-bottom: 3px solid transparent; color: var(--muted); border-radius: 0; padding: 10px 14px; white-space: nowrap; }
+  .tabs button[aria-selected=true] { color: var(--accent); border-bottom-color: var(--accent); }
+  .panel { padding-top: 16px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+  .tile { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .tile b { display: block; font-size: 22px; letter-spacing: -0.01em; }
+  .tile span { color: var(--muted); font-size: 13px; }
+  .tile.urgent b { color: var(--urgent); } .tile.act b { color: var(--act); } .tile.ok b { color: var(--ok); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 10px; }
+  .chip { background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; font-weight: 500; font-size: 13px; }
+  .chip[aria-pressed=true] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 14px; }
+  th { background: #f7fafc; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  .pill { display: inline-block; border-radius: 999px; padding: 2px 9px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .pill.urgent { background: var(--urgent-soft); color: var(--urgent); } .pill.act { background: var(--act-soft); color: var(--act); }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); } .pill.info { background: var(--info-soft); color: var(--info); }
+  .muted { color: var(--muted); } .small { font-size: 13px; }
+  .num { text-align: right; white-space: nowrap; }
+  .trip { background: var(--card); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+  .trip h3 { margin: 0; padding: 10px 14px; font-size: 16px; background: var(--accent-soft); }
+  .trip table { border: 0; border-radius: 0; }
+  .flag { display: inline-block; margin: 2px 4px 2px 0; }
+  textarea { width: 100%; min-height: 160px; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 10px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: #fff; }
+  .rem { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+  .rem-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .seg button { padding: 4px 10px; font-size: 13px; background: #fff; color: var(--accent); }
+  .seg button[aria-pressed=true] { background: var(--accent); color: #fff; }
+  .downloads { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+  .downloads div { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .offer table td:last-child { white-space: nowrap; }
+  footer { margin: 36px 0 24px; color: var(--muted); font-size: 13px; }
+  .hidden { display: none !important; }
+  @media (max-width: 720px) {
+    .rowtable thead { display: none; }
+    .rowtable tr { display: block; border-bottom: 1px solid var(--line); padding: 6px 0; }
+    .rowtable td { display: block; border: 0; padding: 3px 12px; }
+    .map { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  @media print {
+    header.top, #load, .tabs, #next, footer, .noprint, #money, #reminders, #revenue, #downloads { display: none !important; }
+    body { background: #fff; } #results, #day { display: block !important; } .trip { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">Big Blue Desk <span>for Big Blue Vanuatu</span></div>
+    <p class="lead">Drop in your Bookeo, Xero and PayZen exports. In a few seconds every booking is matched to its invoice and its payment, you see exactly what needs doing, and tomorrow's dive list is ready for the crew.</p>
+    <p class="privacy">Your files stay on this computer: they are read in your browser and never uploaded. Nothing in Bookeo, Xero or PayZen is changed.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="load">
+    <h2>1. Your exports</h2>
+    <div class="slots" id="slots"></div>
+    <div class="bar">
+      <button id="sample" type="button">Try it with sample files</button>
+      <button id="clear" type="button" class="ghost">Clear</button>
+      <label class="small">Check as of <input type="date" id="asof"></label>
+    </div>
+    <p class="banner hidden" id="samplebanner">You are looking at sample files: invented customers and amounts, checked as of 27 Oct 2026. Drop in your own exports to check your real bookings.</p>
+  </section>
+
+  <section id="results" class="hidden">
+    <h2>2. What needs doing</h2>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="money" aria-selected="true">Money check</button>
+      <button role="tab" data-tab="day" aria-selected="false">Dive day</button>
+      <button role="tab" data-tab="reminders" aria-selected="false">Reminders</button>
+      <button role="tab" data-tab="revenue" aria-selected="false">Revenue</button>
+      <button role="tab" data-tab="downloads" aria-selected="false">Downloads</button>
+    </nav>
+    <div class="panel" id="money"></div>
+    <div class="panel hidden" id="day"></div>
+    <div class="panel hidden" id="reminders"></div>
+    <div class="panel hidden" id="revenue"></div>
+    <div class="panel hidden" id="downloads"></div>
+  </section>
+
+  <section id="next" class="offer">
+    <h2>Make it run every morning on its own</h2>
+    <p>Today you drop the exports in. Connected to your Bookeo, Xero and PayZen accounts, it runs by itself each morning, fixes what it safely can, and sends you only what needs a person. Four fixed-price steps, one at a time on Upwork:</p>
+    <table>
+      <thead><tr><th>Step</th><th>What you get</th><th class="num">Price</th></tr></thead>
+      <tbody>
+        <tr><td>1. Bookings to cash</td><td>This check, connected and running every morning: paid bookings marked paid in Xero, missing invoices created, failed links and double payments flagged to you.</td><td class="num">$1,800</td></tr>
+        <tr><td>2. Dive day desk</td><td>Tomorrow's manifest for each boat, with cert levels, gear sizes, missing forms and guides, sent to the crew the evening before.</td><td class="num">$3,200</td></tr>
+        <tr><td>3. Enquiry assistant</td><td>Website and email questions answered day and night, Stay &amp; Dive and course quotes, and each student offered their next PADI course. Your team approves replies until you trust it.</td><td class="num">$2,500</td></tr>
+        <tr><td>4. Weekly summary</td><td>Upcoming bookings, cash in against invoices by revenue line, cruise days and anything unpaid, every Monday.</td><td class="num">$2,000</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p>Sample files are invented (names, emails, amounts). Your own files are read in this browser only and are not sent anywhere. Account names shown: 4-1020 Dive Courses and 4-1040 Rentals Sales, from your Xero setup; other codes show as numbers.</p>
+  <p>Built by Taiwo, Pathfinder Automation Solutions, with Claude Code.</p>
+</footer>
+
+<script src="src/tablekit.js"></script>
+<script src="src/diveDesk.js"></script>
+<script src="src/samples.js"></script>
+<script>
+(function () {
+  'use strict';
+  const TK = window.TableKit, Desk = window.DiveDesk;
+  const SLOTS = [
+    { kind: 'bookings', title: 'Bookeo bookings', hint: 'Bookeo: Bookings, then Export (Excel or CSV)', what: 'a Bookeo bookings export' },
+    { kind: 'invoices', title: 'Xero invoices', hint: 'Xero: Sales, Invoices, then Export', what: 'a Xero invoices export' },
+    { kind: 'payments', title: 'PayZen payments', hint: 'PayZen back office: Transactions, then Export', what: 'a PayZen transactions export' },
+    { kind: 'orders', title: 'WooCommerce orders', hint: 'Optional. WooCommerce: Orders, then Export', what: 'a WooCommerce orders export', optional: true }
+  ];
+  const UNPAID = ['unpaid_soon', 'link_failed', 'overdue', 'awaiting'];
+  const state = { tables: {}, files: {}, maps: { bookings: {}, invoices: {}, payments: {}, orders: {} }, asOf: today(), sample: false, filter: 'problems', day: null, lang: {}, tab: 'money' };
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function today() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  const money = (n) => Desk.money(n, state.data ? state.data.opts.currency : 'VUV');
+
+  // ---------- loading files ----------
+  function slotHtml(s) {
+    const t = state.tables[s.kind], f = state.files[s.kind];
+    const cols = t ? Desk.columns(s.kind, t, state.maps[s.kind]) : null;
+    let mapping = '';
+    if (cols) {
+      const spec = Desk.SPECS[s.kind], fields = Object.keys(spec), found = fields.filter((k) => cols.map[k]).length;
+      const miss = cols.missing.length ? '<p class="err">This does not look like ' + esc(s.what) + ': no ' + esc(cols.missing.map((k) => spec[k].label.toLowerCase()).join(' or ')) + ' column found. Pick it below, or drop the file in the right box.</p>' : '';
+      mapping = miss + '<details' + (cols.missing.length ? ' open' : '') + '><summary>Columns: ' + found + ' of ' + fields.length + ' found. Check or change</summary><div class="maps">' +
+        fields.map((k) => '<label class="map"><span>' + esc(spec[k].label) + (spec[k].required ? ' *' : '') + '</span><select data-kind="' + s.kind + '" data-field="' + k + '"><option value="">(not in this file)</option>' +
+          t.headers.map((h) => '<option' + (cols.map[k] === h ? ' selected' : '') + '>' + esc(h) + '</option>').join('') + '</select></label>').join('') + '</div></details>';
+    }
+    return '<div class="slot' + (t ? ' loaded' : '') + '" data-kind="' + s.kind + '"><div class="slot-head"><b>' + esc(s.title) + '</b>' + (s.optional ? '<span class="tag">optional</span>' : '') + '</div>' +
+      '<label class="drop" data-kind="' + s.kind + '"><input type="file" accept=".csv,.xlsx,.txt,.tsv" data-kind="' + s.kind + '"><span>' + (t ? esc(f.name) + ': ' + t.records.length + ' rows' : 'Drop the file here or click to choose') + '</span><small>' + esc(s.hint) + '</small></label>' +
+      (f && f.error ? '<p class="err">' + esc(f.name) + ': ' + esc(f.error) + '</p>' : '') + mapping + (t || (f && f.error) ? '<button class="link" type="button" data-remove="' + s.kind + '">Remove</button>' : '') + '</div>';
+  }
+  // re-drawing keeps any "Check or change" section the person opened
+  function renderSlots() {
+    const open = new Set([...document.querySelectorAll('#slots details[open]')].map((d) => d.closest('.slot').dataset.kind));
+    $('#slots').innerHTML = SLOTS.map(slotHtml).join('');
+    open.forEach((k) => { const d = document.querySelector('#slots .slot[data-kind="' + k + '"] details'); if (d) d.open = true; });
+  }
+
+  async function loadFile(kind, file) {
+    if (state.sample) { state.tables = {}; state.files = {}; state.sample = false; state.asOf = today(); state.day = null; }
+    try {
+      const rows = await TK.readFile(new Uint8Array(await file.arrayBuffer()), file.name);
+      const t = TK.toTable(rows);
+      if (!t.headers.length || !t.records.length) throw new Error('no rows with column names found. Is this the export, or a summary report?');
+      state.tables[kind] = t; state.files[kind] = { name: file.name }; state.maps[kind] = {};
+    } catch (e) { delete state.tables[kind]; state.files[kind] = { name: file.name, error: e.message }; }
+    refresh();
+  }
+  function loadSamples() {
+    state.tables = {}; state.files = {}; state.maps = { bookings: {}, invoices: {}, payments: {}, orders: {} };
+    Object.entries(window.DESK_SAMPLES).forEach(([k, s]) => { state.tables[k] = TK.toTable(TK.parseCsv(s.text)); state.files[k] = { name: s.name }; });
+    state.sample = true; state.asOf = '2026-10-27'; state.day = null; state.filter = 'problems'; refresh();
+  }
+
+  // ---------- results ----------
+  function refresh() {
+    renderSlots();
+    $('#asof').value = state.asOf;
+    $('#samplebanner').classList.toggle('hidden', !state.sample);
+    state.data = null; state.result = null;
+    if (!state.tables.bookings) { $('#results').classList.add('hidden'); return; }
+    const data = Desk.prepare(state.tables, state.maps);
+    if (data.columns.bookings.missing.length) { $('#results').classList.add('hidden'); return; }
+    state.data = data; state.result = Desk.check(data, state.asOf);
+    if (!state.day || !/^\d{4}-\d{2}-\d{2}$/.test(state.day)) state.day = Desk.nextDiveDate(data, state.asOf);
+    $('#results').classList.remove('hidden');
+    renderMoney(); renderDay(); renderReminders(); renderRevenue(); renderDownloads();
+  }
+
+  function detail(x) {
+    const bits = [];
+    if (x.code === 'amount_differs') bits.push('Bookeo ' + money(x.booking.total) + ', Xero ' + money(x.invoice.total));
+    if (x.code === 'paid_twice') bits.push(money(x.overpaid) + ' more than the booking');
+    if (x.owed) bits.push(money(x.owed) + ' owed');
+    if (x.invoice) bits.push('Xero ' + x.invoice.number + ': ' + (x.invoice.state === 'paid' ? 'paid' : x.invoice.state === 'open' ? money(x.invoice.due) + ' due' + (x.invoice.dueDate ? ' by ' + Desk.niceDate(x.invoice.dueDate) : '') : x.invoice.state) + (x.how && x.how !== 'booking number on the invoice' ? ' (matched by ' + x.how + ')' : ''));
+    else if (x.booking) bits.push('no Xero invoice found');
+    (x.payments || []).forEach((p) => bits.push('PayZen ' + p.id + ': ' + p.rawStatus + ' ' + money(p.amount)));
+    if (x.payment) bits.push('PayZen ' + x.payment.id + ', order ' + x.payment.order + ', ' + money(x.payment.amount) + (x.payment.email ? ', ' + x.payment.email : ''));
+    if (x.note && !(x.payments || []).length) bits.push(x.note);
+    return bits.join(' · ');
+  }
+  function renderMoney() {
+    const r = state.result, s = r.summary, data = state.data;
+    const unpaidCount = r.items.filter((x) => UNPAID.includes(x.code)).length;
+    const problems = r.items.filter((x) => x.level !== 'ok' && x.code !== 'awaiting' && x.code !== 'stray_invoice');
+    const codes = Object.keys(Desk.ACTIONS).filter((c) => s.counts[c]);
+    const shown = state.filter === 'problems' ? problems : state.filter === 'all' ? r.items : r.items.filter((x) => x.code === state.filter);
+    const skipped = data.problems.length ? '<details><summary>' + data.problems.length + ' row' + (data.problems.length === 1 ? '' : 's') + ' could not be read and were skipped</summary><ul>' + data.problems.map((p) => '<li>' + esc(p.file) + ' row ' + p.row + ': ' + esc(p.text) + '</li>').join('') + '</ul></details>' : '';
+    $('#money').innerHTML =
+      '<div class="tiles">' +
+      '<div class="tile urgent"><b>' + money(s.toChase) + '</b><span>to chase, ' + unpaidCount + ' unpaid booking' + (unpaidCount === 1 ? '' : 's') + '</span></div>' +
+      '<div class="tile ok"><b>' + money(s.paidNotRecorded) + '</b><span>already paid, still open in Xero</span></div>' +
+      '<div class="tile act"><b>' + money(s.notInvoiced) + '</b><span>booked but never invoiced</span></div>' +
+      '<div class="tile act"><b>' + money(s.toRefund) + '</b><span>paid twice, to refund</span></div>' +
+      '<div class="tile"><b>' + s.bookings + '</b><span>bookings checked (' + money(s.booked) + '), ' + money(s.received) + ' received through PayZen</span></div>' +
+      '</div>' + skipped +
+      '<div class="chips" role="group" aria-label="Show">' +
+      '<button class="chip" data-filter="problems" aria-pressed="' + (state.filter === 'problems') + '">Needs doing (' + problems.length + ')</button>' +
+      codes.map((c) => '<button class="chip" data-filter="' + c + '" aria-pressed="' + (state.filter === c) + '">' + esc(Desk.ACTIONS[c].title) + ' (' + s.counts[c] + ')</button>').join('') +
+      '<button class="chip" data-filter="all" aria-pressed="' + (state.filter === 'all') + '">Everything (' + r.items.length + ')</button></div>' +
+      (shown.length ? '<table class="rowtable"><thead><tr><th>Problem</th><th>Booking</th><th>Customer</th><th>Dive</th><th class="num">Amount</th><th>What we found</th><th>What to do</th></tr></thead><tbody>' +
+        shown.map((x) => {
+          const b = x.booking;
+          return '<tr data-code="' + x.code + '"><td><span class="pill ' + x.level + '">' + esc(x.title) + '</span></td><td>' + esc(b ? b.id : (x.invoice ? x.invoice.number : '')) + '</td><td>' + esc(b ? b.name : (x.payment ? (x.payment.name || x.payment.email) : x.invoice ? x.invoice.contact : '')) + '</td><td>' +
+            (b ? esc(Desk.niceDate(b.date)) + (b.time ? ' ' + esc(b.time) : '') + '<br><span class="muted small">' + esc(b.product) + '</span>' : '') + '</td><td class="num">' + esc(b && b.total != null ? money(b.total) : x.payment ? money(x.payment.amount) : x.invoice ? money(x.invoice.total) : '') + '</td><td class="small">' + esc(detail(x)) + '</td><td class="small">' + esc(x.action) + '</td></tr>';
+        }).join('') + '</tbody></table>' : '<p class="muted">Nothing here.</p>');
+  }
+
+  function renderDay() {
+    const m = Desk.manifest(state.data, state.day, state.result);
+    $('#day').innerHTML = '<div class="bar noprint" style="margin-top:0"><label>Day <input type="date" id="daypick" value="' + esc(state.day) + '"></label><button type="button" class="ghost" id="nextday">Next dive day</button><button type="button" class="ghost" id="print">Print</button></div>' +
+      '<p><b>' + esc(Desk.niceDate(m.date)) + ':</b> ' + m.trips.length + (m.trips.length === 1 ? ' trip, ' : ' trips, ') + m.pax + (m.pax === 1 ? ' person' : ' people') + (m.flagged ? ', <b>' + m.flagged + '</b> with something to sort before the boat leaves' : '') + '.</p>' +
+      (m.trips.length ? m.trips.map((t) => '<div class="trip"><h3>' + esc(t.time || 'No time') + ' &middot; ' + esc(t.product || 'Trip') + ' (' + t.pax + ')</h3><table class="rowtable"><thead><tr><th>Who</th><th>Details</th><th>Before the boat leaves</th></tr></thead><tbody>' +
+        t.people.map((p) => '<tr><td><b>' + esc(p.name) + '</b>' + (p.pax > 1 ? ' x' + p.pax : '') + '<br><span class="muted small">' + esc(p.id) + (p.phone ? ' &middot; ' + esc(p.phone) : '') + '</span></td><td class="small">' + Object.entries(p.extras).map(([h, v]) => '<span class="muted">' + esc(h) + ':</span> ' + esc(v)).join('<br>') + '</td><td>' + (p.flags.length ? p.flags.map((f) => '<span class="pill ' + (/owes/.test(f) ? 'urgent' : 'act') + ' flag">' + esc(f) + '</span>').join('') : '<span class="pill ok">ready</span>') + '</td></tr>').join('') + '</tbody></table></div>').join('') : '<p class="muted">No bookings on this day.</p>') +
+      (Object.keys(m.gear).length ? '<p class="small"><b>Gear:</b> ' + Object.entries(m.gear).map(([h, c]) => esc(h) + ': ' + Object.entries(c).map(([s, n]) => n + ' x ' + esc(s)).join(', ')).join(' &middot; ') + '</p>' : '') +
+      '<div class="noprint"><h3 style="font-size:15px;margin:18px 0 6px">Message for the crew</h3><textarea id="crewtext" readonly>' + esc(m.crewText) + '</textarea><div class="bar" style="margin-top:8px"><button type="button" data-copy="crewtext">Copy</button></div></div>';
+  }
+
+  function guessLang(b) { return /\.(fr|nc|pf|be|ch)$/.test(b.email || '') ? 'fr' : 'en'; }
+  function renderReminders() {
+    const items = state.result.items.filter((x) => UNPAID.includes(x.code)).sort((a, b) => a.booking.date.localeCompare(b.booking.date));
+    $('#reminders').innerHTML = items.length ? '<p class="muted">' + items.length + ' unpaid booking' + (items.length === 1 ? '' : 's') + ', soonest first. Copy a message into your email or WhatsApp; nothing is sent from here.</p>' + items.map((x, i) => {
+      const b = x.booking, lang = state.lang[b.id] || guessLang(b);
+      return '<div class="rem"><div class="rem-head"><div><b>' + esc(b.name) + '</b> <span class="muted small">' + esc(b.id) + ' &middot; ' + esc(Desk.niceDate(b.date)) + ' &middot; ' + esc(b.email || 'no email') + '</span><br><span class="pill ' + x.level + '">' + esc(x.title) + '</span> <b>' + esc(money(x.owed)) + '</b></div>' +
+        '<div class="seg" role="group" aria-label="Language"><button type="button" data-lang="en" data-id="' + esc(b.id) + '" aria-pressed="' + (lang === 'en') + '">English</button> <button type="button" data-lang="fr" data-id="' + esc(b.id) + '" aria-pressed="' + (lang === 'fr') + '">Français</button></div></div>' +
+        '<textarea id="rem-' + i + '" readonly style="min-height:130px">' + esc(Desk.reminder(state.data, x, lang)) + '</textarea><div class="bar" style="margin-top:6px"><button type="button" data-copy="rem-' + i + '">Copy</button></div></div>';
+    }).join('') : '<p class="muted">No unpaid bookings. Nice.</p>';
+  }
+
+  function renderRevenue() {
+    const rev = Desk.revenue(state.data);
+    const total = rev.reduce((s, x) => s + x.amount, 0);
+    $('#revenue').innerHTML = state.tables.invoices ? '<p class="muted">Invoiced in the Xero export, by account (drafts and voided invoices left out).</p><table><thead><tr><th>Account</th><th>Name</th><th class="num">Invoices</th><th class="num">Amount</th></tr></thead><tbody>' +
+      rev.map((x) => '<tr><td>' + esc(x.account) + '</td><td>' + esc(x.name) + '</td><td class="num">' + x.invoices + '</td><td class="num">' + esc(money(x.amount)) + '</td></tr>').join('') +
+      '<tr><td colspan="3"><b>Total</b></td><td class="num"><b>' + esc(money(total)) + '</b></td></tr></tbody></table>' : '<p class="muted">Add the Xero invoices export to see revenue by account.</p>';
+  }
+
+  function renderDownloads() {
+    $('#downloads').innerHTML = '<div class="downloads">' +
+      '<div><b>Fix list</b><p class="small muted">Every problem with what to do, for the office.</p><button type="button" data-dl="fix-xlsx">Excel</button> <button type="button" class="ghost" data-dl="fix-csv">CSV</button></div>' +
+      '<div><b>Dive day list</b><p class="small muted">' + esc(Desk.niceDate(state.day)) + ', one row per person.</p><button type="button" data-dl="day-csv">CSV</button></div>' +
+      '<div><b>Reminders</b><p class="small muted">Name, email, amount and the message, for a mail merge.</p><button type="button" data-dl="rem-csv">CSV</button></div>' +
+      '<div><b>Sample files</b><p class="small muted">The invented exports, to see the format.</p><button type="button" class="ghost" data-dl="samples">Download samples</button></div></div>';
+  }
+
+  function download(name, bytesOrText, type) {
+    const blob = new Blob([bytesOrText], { type });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  function doDownload(kind) {
+    const stamp = state.asOf;
+    if (kind === 'fix-csv') download('big-blue-fix-list-' + stamp + '.csv', TK.toCsv(Desk.FIX_HEADERS, Desk.fixListRows(state.data, state.result)), 'text/csv');
+    if (kind === 'fix-xlsx') download('big-blue-fix-list-' + stamp + '.xlsx', TK.xlsxBytes([{ name: 'Fix list', headers: Desk.FIX_HEADERS, rows: Desk.fixListRows(state.data, state.result) }]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    if (kind === 'day-csv') {
+      const m = Desk.manifest(state.data, state.day, state.result), extraCols = [...new Set([].concat(...m.trips.map((t) => [].concat(...t.people.map((p) => Object.keys(p.extras))))))];
+      const rows = [].concat(...m.trips.map((t) => t.people.map((p) => [t.time, t.product, p.name, p.pax, p.phone, p.id].concat(extraCols.map((h) => p.extras[h] || ''), [p.flags.join('; ')]))));
+      download('big-blue-dive-day-' + state.day + '.csv', TK.toCsv(['Time', 'Trip', 'Name', 'People', 'Phone', 'Booking'].concat(extraCols, ['Before the boat leaves']), rows), 'text/csv');
+    }
+    if (kind === 'rem-csv') {
+      const rows = state.result.items.filter((x) => UNPAID.includes(x.code)).map((x) => { const b = x.booking, lang = state.lang[b.id] || guessLang(b); return [b.name, b.email, b.phone, b.id, b.date, money(x.owed), lang, Desk.reminder(state.data, x, lang)]; });
+      download('big-blue-reminders-' + stamp + '.csv', TK.toCsv(['Name', 'Email', 'Phone', 'Booking', 'Dive date', 'Owed', 'Language', 'Message'], rows), 'text/csv');
+    }
+    if (kind === 'samples') Object.values(window.DESK_SAMPLES).forEach((s) => download(s.name, s.text, 'text/csv'));
+  }
+
+  // ---------- events ----------
+  const slots = $('#slots');
+  slots.addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.matches('input[type=file]') && t.files[0]) loadFile(t.dataset.kind, t.files[0]);
+    if (t.matches('select')) { state.maps[t.dataset.kind][t.dataset.field] = t.value; refresh(); }
+  });
+  slots.addEventListener('click', (e) => { const k = e.target.dataset.remove; if (k) { delete state.tables[k]; delete state.files[k]; state.maps[k] = {}; refresh(); } });
+  slots.addEventListener('dragover', (e) => { const d = e.target.closest('.drop'); if (d) { e.preventDefault(); d.classList.add('over'); } });
+  slots.addEventListener('dragleave', (e) => { const d = e.target.closest('.drop'); if (d) d.classList.remove('over'); });
+  slots.addEventListener('drop', (e) => { const d = e.target.closest('.drop'); if (!d) return; e.preventDefault(); d.classList.remove('over'); if (e.dataTransfer.files[0]) loadFile(d.dataset.kind, e.dataTransfer.files[0]); });
+  $('#sample').addEventListener('click', loadSamples);
+  $('#clear').addEventListener('click', () => { state.tables = {}; state.files = {}; state.maps = { bookings: {}, invoices: {}, payments: {}, orders: {} }; state.sample = false; state.asOf = today(); state.day = null; refresh(); });
+  $('#asof').addEventListener('change', (e) => { if (/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) { state.asOf = e.target.value; refresh(); } });
+  document.querySelector('.tabs').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-tab]'); if (!b) return;
+    state.tab = b.dataset.tab;
+    document.querySelectorAll('.tabs button').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
+    ['money', 'day', 'reminders', 'revenue', 'downloads'].forEach((id) => $('#' + id).classList.toggle('hidden', id !== state.tab));
+  });
+  $('#results').addEventListener('click', (e) => {
+    const t = e.target;
+    if (t.dataset.filter) { state.filter = t.dataset.filter; renderMoney(); }
+    if (t.dataset.lang) { state.lang[t.dataset.id] = t.dataset.lang; renderReminders(); }
+    if (t.dataset.dl) doDownload(t.dataset.dl);
+    if (t.id === 'nextday') { state.day = Desk.nextDiveDate(state.data, state.day); renderDay(); }
+    if (t.id === 'print') window.print();
+    if (t.dataset.copy) {
+      const area = document.getElementById(t.dataset.copy);
+      const done = () => { t.textContent = 'Copied'; setTimeout(() => { t.textContent = 'Copy'; }, 1500); };
+      (navigator.clipboard && window.isSecureContext ? navigator.clipboard.writeText(area.value) : Promise.reject()).then(done, () => { area.select(); document.execCommand('copy'); done(); });
+    }
+  });
+  $('#results').addEventListener('change', (e) => { if (e.target.id === 'daypick' && /^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) { state.day = e.target.value; renderDay(); } });
+  refresh();
+})();
+</script>
+</body>
+</html>

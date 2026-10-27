@@ -1,0 +1,96 @@
+
+1. CSV reading
+  PASS comma file
+  PASS semicolon file (European Excel)
+  PASS tab file
+  PASS quoted commas, line breaks and doubled quotes
+  PASS byte-order mark is dropped
+
+2. Money as exports write it
+  PASS VT 12,000
+  PASS $1,200.00
+  PASS 1.234,50 (European)
+  PASS 12 000 (space thousands)
+  PASS (500) is negative
+  PASS -48,000 VUV
+  PASS words are not money
+
+3. Dates as exports write them
+  PASS 28/10/2026 08:00 (day first)
+  PASS 10/28/2026 8:00 PM (month first, told)
+  PASS 2026-10-28T13:30:00
+  PASS Wed 28 Oct 2026 8:30
+  PASS October 28, 2026
+  PASS 28 oct. 2026 (French)
+  PASS Excel serial 46323.3333
+  PASS 31/02/2026 refused
+  PASS column with 13/10 reads day first
+  PASS column with 10/13 reads month first
+
+4. Finding the header row and the columns
+  PASS title line above the headers is skipped
+  PASS booking columns found by name
+  PASS Xero CamelCase headers
+  PASS PayZen columns
+  PASS French PayZen columns
+  PASS a column chosen on the page wins and is not reused
+  PASS missing required column is reported
+
+5. Excel files
+  PASS an .xlsx written here reads back the same
+/Users/apple/Library/Python/3.9/lib/python/site-packages/openpyxl/styles/stylesheet.py:237: UserWarning: Workbook contains no default style, apply openpyxl's default
+  warn("Workbook contains no default style, apply openpyxl's default")
+  PASS Excel (openpyxl) opens it
+  PASS real .xlsx: title row skipped, 15 bookings
+  PASS real .xlsx: date cell becomes a date and time
+  PASS real .xlsx: shared-string text and numbers
+  PASS a PDF is refused with a reason
+  PASS an old .xls is refused with a reason
+
+6. The money check on the sample exports (as of 27 Oct 2026)
+  PASS 15 bookings, 15 invoices from 16 lines (one has two lines), 11 payments
+  PASS currency read from the files
+  PASS paid but still open in Xero: Tom (1043202)
+  PASS unpaid and diving this week: Mei Lin, Lucas, Emma
+  PASS not in Xero: Aroha (1043205)
+  PASS paid twice: James (1043206), VT 13,500 to refund
+  PASS deposit plus balance is not "paid twice"
+  PASS amounts differ: Ben (Bookeo 185,000 vs Xero 158,000)
+  PASS cancelled with an open invoice: Olivia
+  PASS paid in Xero, unpaid in Bookeo: Noah
+  PASS expired link, not diving soon: Chloe
+  PASS overdue: Hannah; awaiting: Daniel
+  PASS payment with no booking: WEB-88812
+  PASS shop order explains the open mask-and-snorkel invoice
+  PASS cruise booking matched by email when the payment has no booking number
+  PASS ...and its invoice by email and amount
+  PASS refused attempt noted on the unpaid diver
+  PASS VT 159,000 to chase
+  PASS VT 12,000 paid but not recorded, VT 13,500 never invoiced
+  PASS booked VT 490,000, received VT 304,000, open in Xero VT 189,500
+  PASS urgent items sort first
+  PASS without the shop export the mask invoice is listed as unexplained
+
+7. Dive-day manifest
+  PASS next dive day after 27 Oct is 28 Oct
+  PASS two trips, seven people
+  PASS 08:00 reef dive has 4 divers, 13:30 Discover has 3
+  PASS missing cert level and money owed flagged
+  PASS Discover course is not asked for a cert; missing medical form flagged
+  PASS wetsuit sizes counted (3 M, 2 L, 2 S)
+  PASS crew message lists both trips
+  PASS cancelled bookings stay off the manifest
+
+8. Reminders and revenue
+  PASS English reminder names the dive, date and amount
+  PASS French reminder
+  PASS revenue by account: courses 184,500, dives 179,000, rentals 6,500, stay 98,000
+  PASS known account names shown
+
+9. Bad rows are reported, not fatal
+  PASS unreadable date reported and skipped
+  PASS duplicate booking number reported
+  PASS a payment row with no amount is reported
+  PASS the fix list download has a row per problem
+
+74 passed, 0 failed
